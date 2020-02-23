@@ -35,6 +35,7 @@ def parseINPUT(file_name):
 
 # function to compute  the score of the submission.
 # The input to the function is limited and it assume that the book all can be shipped legally.
+# It is used for fine-tunning
 def judgeFunction(output_string,B_value):
     # used to store current score can be added by this book.
     B_value_cur=copy.deepcopy(B_value)
@@ -44,7 +45,7 @@ def judgeFunction(output_string,B_value):
 
     sum_score=0
     for i in range(A):
-        books=list(map(int,lines[i*2+1]))
+        books=list(map(int,lines[i*2+2].split(" ")))
         for book in books:
             sum_score+=B_value_cur[book]
             B_value_cur[book]=0

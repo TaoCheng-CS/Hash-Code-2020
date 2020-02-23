@@ -8,4 +8,11 @@ def test_genSubmission():
     ]
     print(generateSubmission(orderedLib,shippedBooks))
 
-test_genSubmission()
+def test_score():
+    f=open("a_answer.txt","r")
+    B_value=[1,2,3,6,5,4]
+    output_string=f.read()
+    score=judgeFunction(output_string,B_value)
+    print(score)
+
+test_score()
