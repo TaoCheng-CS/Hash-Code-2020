@@ -1,6 +1,12 @@
 import numpy as np
 import copy
 
+def min(a,b):
+        if a>b:
+            return b
+        else:
+            return a
+
 # function used to parse input.
 def parseINPUT(file_name):
     f=open(file_name,"r")
@@ -66,12 +72,6 @@ def optimizer4b(input):
     def cmp_function(book):
         return T[book]
 
-    def min(a,b):
-        if a>b:
-            return b
-        else: 
-            return a
-
     B,L,D,B_value,N,T,M,N_n=input.values()
     orderedLib=[]
     shippedBooks=[]
@@ -99,19 +99,126 @@ def optimizer4b(input):
     
     return orderedLib,shippedBooks
 
+def optimizer4c(input):
+    def cmp(lib):
+        if curDay+T[lib]<D:
+            SumValue=0
+            for book in N[lib]:
+                SumValue+=B_valueCur[book]
+            return SumValue/T[lib]
+        else: 
+            return 0
+
+    B,L,D,B_value,N,T,M,N_n=input.values()
+    orderedLib=[]
+    shippedBooks=[]
+
+    # B_valueCur is used to store current value of books.
+    B_valueCur=copy.deepcopy(B_value)
+
+    orderBYcmp=[i for i in range(L)]
+    
+    #iteration
+    curDay=0
+    numLibs=0
+    while curDay<=D and numLibs<=B:
+        # get the best lib
+        orderBYcmp.sort(key=cmp,reverse=True)
+        curLib=orderBYcmp[0]
+        orderBYcmp=orderBYcmp[1:]
+
+        if curDay+T[curLib]<D:
+            #set value to zero
+            for book in N[curLib]:
+                B_valueCur[book]=0
+
+            curDay+=T[curLib]
+            numLibs+=1
+            orderedLib.append(curLib)
+            sumBooks=min((D-curDay)*M[curLib],N_n[curLib])
+            shippedBooks+=[N[curLib][:sumBooks]]
+        else:
+            if curDay+T[curLib]==D:
+                print("Fine tunning needed for the last choice")
+            break
+    return orderedLib,shippedBooks
+
+def optimizer4d(input):
+    def sortBybookValue(key):
+            return B_valueCur[key] 
+    
+    def cmp(lib):
+        if curDay+T[lib]<D:
+            return min(D-curDay-T[lib],N_n_copy[lib])
+        else: 
+            return 0
+
+    B,L,D,B_value,N,T,M,N_n=input.values()
+    orderedLib=[]
+    shippedBooks=[]
+
+    # B_valueCur is used to store current value of books.
+    B_valueCur=copy.deepcopy(B_value)
+
+    orderBYcmp=[i for i in range(L)]
+
+    # book in which library dictionary.
+    # used to reduce time complexity
+    book_dic={}
+    for i in range(L):
+        for book in N[i]:
+            if book in book_dic:
+                book_dic[book].append(i)
+            else:
+                book_dic[book]=[i]
+    
+    #iteration
+    curDay=0
+    numLibs=0
+    N_n_copy=copy.deepcopy(N_n)
+
+    while curDay<=D and numLibs<=B:
+        # get the best lib
+        orderBYcmp.sort(key=cmp,reverse=True)
+        curLib=orderBYcmp[0]
+        orderBYcmp=orderBYcmp[1:]
+
+        if curDay+T[curLib]<D:
+            #set value to zero
+            for book in N[curLib]:
+                B_valueCur[book]=0
+                if book in book_dic:
+                    for lib in book_dic[book]:
+                        N_n_copy[lib]-=1
+                    del book_dic[book]
+
+            curDay+=T[curLib]
+            numLibs+=1
+            orderedLib.append(curLib)
+            sumBooks=min((D-curDay)*M[curLib],N_n[curLib])
+            if sumBooks<N_n[curLib]:
+                N[curLib].sort(key=sortBybookValue,reverse=True)
+            shippedBooks+=[N[curLib][:sumBooks]]
+        else:
+            if curDay+T[curLib]==D:
+                print("Fine tunning needed for the last choice")
+            break
+    return orderedLib,shippedBooks
+
 if __name__ == "__main__":
     
     file_name_list=["a_example.txt","b_read_on.txt","c_incunabula.txt"
                     ,"d_tough_choices.txt","e_so_many_books.txt","f_libraries_of_the_world.txt"]
 
-    file_name=file_name_list[1]
+    file_name=file_name_list[3]
 
     input=parseINPUT(file_name)
-    orderedLib,shippedBooks=optimizer4b(input)
+    orderedLib,shippedBooks=optimizer4d(input)
     submission=generateSubmission(orderedLib,shippedBooks)
 
+    # show score of the submission.
     print(judgeFunction(submission,input["valueOFbook"]))
     
     # #write submission to file.
-    # with open(file_name[0]+"_answer.txt","w") as f:
-    #     f.write(submission)
+    with open(file_name[0]+"_answer.txt","w") as f:
+        f.write(submission)
