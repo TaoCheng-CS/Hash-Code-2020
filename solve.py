@@ -220,5 +220,5 @@ if __name__ == "__main__":
     print(judgeFunction(submission,input["valueOFbook"]))
     
     # #write submission to file.
-    with open(file_name[0]+"_answer.txt","w") as f:
-        f.write(submission)
+    # with open(file_name[0]+"_answer.txt","w") as f:
+    #     f.write(submission)
