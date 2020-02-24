@@ -14,5 +14,3 @@ def test_score():
     output_string=f.read()
     score=judgeFunction(output_string,B_value)
     print(score)
-
-test_score()
