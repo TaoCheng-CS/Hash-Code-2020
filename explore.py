@@ -30,3 +30,15 @@ def d_problem():
         assert m==1
     
     print(np.sum(N_n))
+
+def e_problem():
+    input=parseINPUT("e_so_many_books.txt")
+    N_n,M=input["booksINlib"],input["numOFbooksSHIPPED"]
+    print(np.sum(N_n))
+    for m in M:
+        assert m==1 or m==2
+
+def f_problem():
+    input=parseINPUT("f_libraries_of_the_world.txt")
+    N_n,M=input["booksINlib"],input["numOFbooksSHIPPED"]
+    print(np.sum(N_n))

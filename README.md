@@ -15,3 +15,5 @@ Here are my ideas for these problem.
     Sum(N_i)=220800>78600=B
     $$
     We only need to continually select the library whose gain is maximuim.
+
+5. The obvious feature of problem e is that it can only ship most 1/10 books.
