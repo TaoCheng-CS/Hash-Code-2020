@@ -38,7 +38,30 @@ def e_problem():
     for m in M:
         assert m==1 or m==2
 
+    
+    B_value=input["valueOFbook"]
+    B_value.sort(reverse=True)
+    print(np.sum(B_value[:28669]))
+
+
 def f_problem():
     input=parseINPUT("f_libraries_of_the_world.txt")
     N_n,M=input["booksINlib"],input["numOFbooksSHIPPED"]
     print(np.sum(N_n))
+
+    T=input["numOFsignupDays"]
+    print("T min is %d"%(np.min(T)))
+    print("T max is %d"%(np.max(T)))
+
+    M=input["numOFbooksSHIPPED"]
+    print("M min is %d"%(np.min(M)))
+    print("M max is %d"%(np.max(M)))
+
+    B_value=input["valueOFbook"]
+    print("value min is %d"%(np.min(B_value)))
+    print("value max is %d"%(np.max(B_value)))
+    B_value.sort(reverse=True)
+    print(np.sum(B_value[:12881]))
+
+
+f_problem()

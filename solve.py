@@ -50,13 +50,16 @@ def judgeFunction(output_string,B_value):
     lines=output_string.split("\n")
     A=int(lines[0])
 
+    sumBooks=0
     sum_score=0
     for i in range(A):
         books=list(map(int,lines[i*2+2].split(" ")))
         for book in books:
             sum_score+=B_value_cur[book]
-            B_value_cur[book]=0
-    
+            if B_value_cur[book]!=0:
+                sumBooks+=1
+                B_value_cur[book]=0
+    print("number of books is %d"%sumBooks)
     return sum_score
 
 def generateSubmission(orderedLib,shippedBooks):
@@ -114,7 +117,6 @@ def optimizer4c(input):
     B,L,D,B_value,N,T,M,N_n=input.values()
     orderedLib=[]
     shippedBooks=[]
-
     # B_valueCur is used to store current value of books.
     B_valueCur=copy.deepcopy(B_value)
 
@@ -143,6 +145,7 @@ def optimizer4c(input):
             if curDay+T[curLib]==D:
                 print("Fine tunning needed for the last choice")
             break
+    print(curDay)
     return orderedLib,shippedBooks
 
 def optimizer4d(input):
@@ -195,7 +198,7 @@ def optimizer4d(input):
             shippedBooks+=[N[curLib][:sumBooks]]
 
             #set value to zero
-            for book in N[curLib]:
+            for book in N[curLib][:sumBooks]:
                 B_valueCur[book]=0
                 if book in book_dic:
                     for lib in book_dic[book]:
@@ -233,23 +236,13 @@ def optimizer4e(input):
             shippedBooksLib=N[lib][:sumBooks]
             for book in shippedBooksLib:
                 SumValue+=B_valueCur[book]
+            # if curDay<=D/2:
             if curDay<=D/2:
                 return SumValue/T[lib]
             else:
                 return SumValue/math.sqrt(T[lib])
         else: 
             return 0
-
-    
-    # cmp3 is little prunning for cmp1    
-    def cmp3(lib1,lib2):
-        gainValue1=cmp1(lib1)
-        gainValue2=cmp1(lib2)
-        if abs(gainValue1-gainValue2)<=10:
-            return (T[lib2]-T[lib1])*(gainValue1-gainValue2)
-        else:
-            return gainValue1-gainValue2
-
 
     B,L,D,B_value,N,T,M,N_n=input.values()
     orderedLib=[]
@@ -263,11 +256,18 @@ def optimizer4e(input):
     #iteration
     curDay=0
     numLibs=0
+    L_valueCur=[0 for i in range(L)]
     while curDay<=D and numLibs<=B:
+
+        # update value
+        # used to save time
+        for lib in orderBYcmp:
+            L_valueCur[lib]=cmp1(lib)
+
         # get the best lib
         # orderBYcmp.sort(key=cmp1,reverse=True)
-        orderBYcmp.sort(key=cmp1,reverse=True)
-        # orderBYcmp.sort(key=cmp_to_key(cmp3),reverse=True)
+        # orderBYcmp.sort(key=cmp2,reverse=True)
+        orderBYcmp.sort(key=cmp_to_key(cmp4),reverse=True)
         curLib=orderBYcmp[0]
         orderBYcmp=orderBYcmp[1:]
 
@@ -281,15 +281,13 @@ def optimizer4e(input):
             shippedBooks+=[N[curLib][:sumBooks]]
 
             #set value to zero
-            for book in N[curLib]:
+            for book in N[curLib][:sumBooks]:
                 B_valueCur[book]=0
 
         else:
             if curDay+T[curLib]==D:
                 print("Fine tunning needed for the last choice")
-            print(curDay)
-            break
-            
+            break    
     return orderedLib,shippedBooks
 
 def optimizer4f(input):
@@ -309,6 +307,30 @@ def optimizer4f(input):
         else: 
             return 0
 
+    def cmp3(lib1,lib2):
+        gainValue1=cmp1(lib1)
+        gainValue2=cmp1(lib2)
+        if abs(gainValue1-gainValue2)<=480:
+            return (T[lib2]-T[lib1])*(gainValue1-gainValue2)
+        else:
+            return gainValue1-gainValue2
+
+    def cmp4(lib1,lib2):
+        gainValue1=cmp1(lib1)
+        gainValue2=cmp1(lib2)
+        if abs(gainValue1-gainValue2)<=50:
+            if gainValue1<gainValue2 and T[lib1]>=T[lib2]:
+                return -1
+            elif gainValue1>gainValue2 and T[lib1]<=T[lib2]:
+                return 1
+            else:
+                if curDay<=D/2:
+                    return T[lib2]-T[lib1]
+                else:
+                    return T[lib1]-T[lib2]
+        else:
+            return gainValue1-gainValue2
+
     B,L,D,B_value,N,T,M,N_n=input.values()
     orderedLib=[]
     shippedBooks=[]
@@ -322,15 +344,10 @@ def optimizer4f(input):
     curDay=0
     numLibs=0
 
-    # find the maxim sign up days
-    min_T=D
-    for t in T:
-        if min_T>t:
-            min_T=t
-
     while curDay<=D and numLibs<=B:
         # get the best lib
-        orderBYcmp.sort(key=cmp1,reverse=True)
+        # orderBYcmp.sort(key=cmp1,reverse=True)
+        orderBYcmp.sort(key=cmp_to_key(cmp4),reverse=True)
         curLib=orderBYcmp[0]
         orderBYcmp=orderBYcmp[1:]
 
@@ -344,7 +361,7 @@ def optimizer4f(input):
             shippedBooks+=[N[curLib][:sumBooks]]
 
             #set value to zero
-            for book in N[curLib]:
+            for book in N[curLib][:sumBooks]:
                 B_valueCur[book]=0
 
         else:
