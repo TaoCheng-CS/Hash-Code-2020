@@ -16,4 +16,4 @@ Here are my ideas for these problem.
     $$
     We only need to continually select the library whose gain is maximuim.
 
-5. The obvious feature of problem e is that it can only ship most 1/10 books.
+5. The obvious feature of problem e is that it can only ship at most 1/10 books.
