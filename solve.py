@@ -101,7 +101,7 @@ def optimizer4b(input):
             shippedBooks+=[N[curLib][:sumBooks]]
         else:
             break
-    
+    print("cur day %d"%curDay)
     return orderedLib,shippedBooks
 
 def optimizer4c(input):
@@ -210,6 +210,81 @@ def optimizer4d(input):
             break
     return orderedLib,shippedBooks
 
+def optimizer4dselect(input):
+    def sortBybookValue(key):
+        if key in book_dic:
+            return B_valueCur[key]/len(book_dic[key])
+        else:
+            return 0
+    
+    def cmp(lib):
+        if curDay+T[lib]<D:
+            return min(D-curDay-T[lib],N_n_copy[lib])
+        else: 
+            return 0
+
+    def cmp1(lib1,lib2):
+        value1=cmp(lib1)
+        value2=cmp(lib2)
+
+        if value1==value2:
+            # todo
+            return 0
+        else:
+            return value1-value2
+
+    B,L,D,B_value,N,T,M,N_n=input.values()
+    orderedLib=[]
+    shippedBooks=[]
+
+    # B_valueCur is used to store current value of books.
+    B_valueCur=copy.deepcopy(B_value)
+
+    orderBYcmp=[i for i in range(L)]
+
+    # book in which library dictionary.
+    # used to reduce time complexity
+    book_dic={}
+    for i in range(L):
+        for book in N[i]:
+            if book in book_dic:
+                book_dic[book].append(i)
+            else:
+                book_dic[book]=[i]
+    
+    #iteration
+    curDay=0
+    numLibs=0
+    N_n_copy=copy.deepcopy(N_n)
+
+    while curDay<=D and numLibs<=B:
+        # get the best lib
+        orderBYcmp.sort(key=cmp,reverse=True)
+        curLib=orderBYcmp[0]
+        orderBYcmp=orderBYcmp[1:]
+
+        if curDay+T[curLib]<D:
+            curDay+=T[curLib]
+            numLibs+=1
+            orderedLib.append(curLib)
+            sumBooks=min((D-curDay)*M[curLib],N_n[curLib])
+            if sumBooks<N_n[curLib]:
+                N[curLib].sort(key=sortBybookValue,reverse=True)
+            shippedBooks+=[N[curLib][:sumBooks]]
+
+            #set value to zero
+            for book in N[curLib][:sumBooks]:
+                B_valueCur[book]=0
+                if book in book_dic:
+                    for lib in book_dic[book]:
+                        N_n_copy[lib]-=1
+                    del book_dic[book]
+        else:
+            if curDay+T[curLib]==D:
+                print("Fine tunning needed for the last choice")
+            break
+    return orderedLib,shippedBooks
+
 def optimizer4e(input):
     def sortBybookValue(key):
             return B_valueCur[key] 
@@ -217,30 +292,13 @@ def optimizer4e(input):
     def cmp1(lib):
         if curDay+T[lib]<D:
             SumValue=0
-            sumBooks=min((D-curDay)*M[lib],N_n[lib])
+            sumBooks=min((D-curDay-T[lib])*M[lib],N_n[lib])
             if sumBooks<N_n[lib]:
                 N[lib].sort(key=sortBybookValue,reverse=True)
             shippedBooksLib=N[lib][:sumBooks]
             for book in shippedBooksLib:
                 SumValue+=B_valueCur[book]
             return SumValue/T[lib]
-        else: 
-            return 0
-
-    def cmp2(lib):
-        if curDay+T[lib]<D:
-            SumValue=0
-            sumBooks=min((D-curDay)*M[lib],N_n[lib])
-            if sumBooks<N_n[lib]:
-                N[lib].sort(key=sortBybookValue,reverse=True)
-            shippedBooksLib=N[lib][:sumBooks]
-            for book in shippedBooksLib:
-                SumValue+=B_valueCur[book]
-            # if curDay<=D/2:
-            if curDay<=D/2:
-                return SumValue/T[lib]
-            else:
-                return SumValue/math.sqrt(T[lib])
         else: 
             return 0
 
@@ -256,18 +314,9 @@ def optimizer4e(input):
     #iteration
     curDay=0
     numLibs=0
-    L_valueCur=[0 for i in range(L)]
     while curDay<=D and numLibs<=B:
-
-        # update value
-        # used to save time
-        for lib in orderBYcmp:
-            L_valueCur[lib]=cmp1(lib)
-
         # get the best lib
-        # orderBYcmp.sort(key=cmp1,reverse=True)
-        # orderBYcmp.sort(key=cmp2,reverse=True)
-        orderBYcmp.sort(key=cmp_to_key(cmp4),reverse=True)
+        orderBYcmp.sort(key=cmp1,reverse=True)
         curLib=orderBYcmp[0]
         orderBYcmp=orderBYcmp[1:]
 
@@ -297,7 +346,7 @@ def optimizer4f(input):
     def cmp1(lib):
         if curDay+T[lib]<D:
             SumValue=0
-            sumBooks=min((D-curDay)*M[lib],N_n[lib])
+            sumBooks=min((D-curDay-T[lib])*M[lib],N_n[lib])
             if sumBooks<N_n[lib]:
                 N[lib].sort(key=sortBybookValue,reverse=True)
             shippedBooksLib=N[lib][:sumBooks]
@@ -346,8 +395,8 @@ def optimizer4f(input):
 
     while curDay<=D and numLibs<=B:
         # get the best lib
-        # orderBYcmp.sort(key=cmp1,reverse=True)
-        orderBYcmp.sort(key=cmp_to_key(cmp4),reverse=True)
+        orderBYcmp.sort(key=cmp1,reverse=True)
+        # orderBYcmp.sort(key=cmp_to_key(cmp4),reverse=True)
         curLib=orderBYcmp[0]
         orderBYcmp=orderBYcmp[1:]
 
@@ -378,15 +427,14 @@ if __name__ == "__main__":
     file_name_list=["a_example.txt","b_read_on.txt","c_incunabula.txt"
                     ,"d_tough_choices.txt","e_so_many_books.txt","f_libraries_of_the_world.txt"]
 
-    file_name=file_name_list[5]
+    file_name=file_name_list[3]
 
     input=parseINPUT(file_name)
-    orderedLib,shippedBooks=optimizer4f(input)
+    orderedLib,shippedBooks=optimizer4dselect(input)
     submission=generateSubmission(orderedLib,shippedBooks)
-
     # show score of the submission.
     print(judgeFunction(submission,input["valueOFbook"]))
     
-    # #write submission to file.
+    # # write submission to file.
     # with open(file_name[0]+"_answer.txt","w") as f:
     #     f.write(submission)
