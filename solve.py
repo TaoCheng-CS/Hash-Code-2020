@@ -128,6 +128,7 @@ def optimizer4c(input):
     while curDay<=D and numLibs<=B:
         # get the best lib
         orderBYcmp.sort(key=cmp,reverse=True)
+        # orderBYcmp.sort(key=cmp_to_key(cmp2),reverse=True)
         curLib=orderBYcmp[0]
         orderBYcmp=orderBYcmp[1:]
 
@@ -150,8 +151,8 @@ def optimizer4c(input):
 
 def optimizer4d(input):
     def sortBybookValue(key):
-            return B_valueCur[key] 
-    
+        return B_valueCur[key]
+
     def cmp(lib):
         if curDay+T[lib]<D:
             return min(D-curDay-T[lib],N_n_copy[lib])
@@ -192,7 +193,7 @@ def optimizer4d(input):
             curDay+=T[curLib]
             numLibs+=1
             orderedLib.append(curLib)
-            sumBooks=min((D-curDay)*M[curLib],N_n[curLib])
+            sumBooks=min(D-curDay,N_n_copy[curLib])
             if sumBooks<N_n[curLib]:
                 N[curLib].sort(key=sortBybookValue,reverse=True)
             shippedBooks+=[N[curLib][:sumBooks]]
@@ -200,10 +201,10 @@ def optimizer4d(input):
             #set value to zero
             for book in N[curLib][:sumBooks]:
                 B_valueCur[book]=0
-                if book in book_dic:
-                    for lib in book_dic[book]:
-                        N_n_copy[lib]-=1
-                    del book_dic[book]
+                # if book in book_dic:
+                for lib in book_dic[book]:
+                    N_n_copy[lib]-=1
+                del book_dic[book]
         else:
             if curDay+T[curLib]==D:
                 print("Fine tunning needed for the last choice")
@@ -430,11 +431,12 @@ if __name__ == "__main__":
     file_name=file_name_list[3]
 
     input=parseINPUT(file_name)
-    orderedLib,shippedBooks=optimizer4dselect(input)
+    orderedLib,shippedBooks=optimizer4d(input)
     submission=generateSubmission(orderedLib,shippedBooks)
+    # print(orderedLib)
     # show score of the submission.
     print(judgeFunction(submission,input["valueOFbook"]))
     
-    # # write submission to file.
-    # with open(file_name[0]+"_answer.txt","w") as f:
-    #     f.write(submission)
+    # write submission to file.
+    with open(file_name[0]+"_answer.txt","w") as f:
+        f.write(submission)

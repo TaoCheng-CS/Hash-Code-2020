@@ -12,6 +12,8 @@ def c_problem():
         assert N_n[i]<M[i]
     
     print(np.sum(N_n))
+    B_value=input["valueOFbook"]
+    print("Sum value is %d"%(np.sum(B_value)))
 
 def d_problem():
     input=parseINPUT("d_tough_choices.txt")
@@ -64,4 +66,4 @@ def f_problem():
     print(np.sum(B_value[:12881]))
 
 
-f_problem()
+c_problem()

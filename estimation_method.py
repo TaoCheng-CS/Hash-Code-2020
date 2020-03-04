@@ -1,6 +1,16 @@
 import copy
 from solve import *
 
+def bubbleSortReversed(inList,cmp,number):
+    length=len(inList)
+    assert length>=number
+
+    for i in range(number):
+        for j in range(i+1,length):
+            if cmp(inList[i],inList[j])<0:
+                # swap
+                inList[i],inList[j]=inList[j],inList[i]
+
 def orderedLib2N_n(orderLib,B_value,T,M,N_n,N,D):
     def sortBybookValuein(key):
         return B_valueCur[key] 
@@ -18,7 +28,7 @@ def orderedLib2N_n(orderLib,B_value,T,M,N_n,N,D):
     return shippedBooks
 
 
-def solveByLocalOpt(candidateLib,B_value,T,M,N_n,N,lastDays):
+def solveByLocalOpt(candidateLib,LibBookValueCur,T,M,N_n,N,lastDays,book_dic):
 
     def sortBybookValue(key):
         return B_valueCur[key]
@@ -40,7 +50,7 @@ def solveByLocalOpt(candidateLib,B_value,T,M,N_n,N,lastDays):
 
     D=lastDays
     orderBYcmp=copy.deepcopy(candidateLib)
-    B_valueCur=copy.deepcopy(B_value)
+    
 
     # book in which library dictionary.
     # used to reduce time complexity
@@ -88,82 +98,129 @@ def solveByLocalOpt(candidateLib,B_value,T,M,N_n,N,lastDays):
             break
     return optValue
 
-def cmp(lib):
-    if curDay+T[lib]<D:
-        SumValue=0
-        sumBooks=min((D-curDay)*M[lib],N_n[lib])
-        if sumBooks<N_n[lib]:
-            N[lib].sort(key=sortBybookValue,reverse=True)
-        shippedBooksLib=N[lib][:sumBooks]
-        for book in shippedBooksLib:
-            SumValue+=B_valueCur[book]
-        return SumValue/T[lib]
-    else: 
-        return 0
+if __name__ == "__main__":
 
-def sortBybookValue(key):
-    return B_valueCur[key]
-
-limit=100
-input=parseINPUT("f_libraries_of_the_world.txt")
-B,L,D,B_value,N,T,M,N_n=input.values()
-
-
-B_valueCur=copy.deepcopy(B_value)
-orderBYcmp=[i for i in range(L)]
-orderLib=[]
-
-finalScore=0
-curDay=0
-while curDay<=D and len(orderBYcmp)>=1:
-    orderBYcmp.sort(key=cmp,reverse=True)
-    candidateLib=orderBYcmp[:limit]
-
-    choose=-1
-    valueGain=0
-    libGain=0
-    for lib in candidateLib:
-        if curDay+T[lib]<D:
-            gain=0
-            B_valueCur4lib=copy.deepcopy(B_valueCur)
-            sumBooks=min((D-curDay-T[lib])*M[lib],N_n[lib])
-            if sumBooks<N_n[lib]:
-                N[lib].sort(key=sortBybookValue,reverse=True)
-            for book in N[lib][:sumBooks]:
-                gain+=B_valueCur4lib[book]
-                B_valueCur4lib[book]=0
-            
-            orderBYcmpCur=copy.deepcopy(orderBYcmp)
-            orderBYcmpCur.remove(lib)
-            estimateGain=solveByLocalOpt(orderBYcmpCur,B_valueCur4lib,T,M,N_n,N,D-curDay-T[lib])
-            gain+=estimateGain
-            if gain>valueGain:
-                valueGain=gain
-                choose=lib
-                libGain=gain-estimateGain
+    def sortBybookValuein(key):
+        return B_value[key] 
+    def cmp(lib1, lib2):
+        return calGain(lib1,False)/T[lib1]-calGain(lib2,False)/T[lib2]
     
-    if choose==-1:
-        break
-    sumBooks=min((D-curDay-T[choose])*M[choose],N_n[choose])
-    if sumBooks<N_n[choose]:
-        N[choose].sort(key=sortBybookValue,reverse=True)
-    for book in N[choose][:sumBooks]:
-        B_valueCur[book]=0
+    def calGain(lib,returnchooseList):
+        choosedList=[]
+        if curDay+T[lib]<D:
+            SumValue=0
+            sumBooks=min((D-curDay-T[lib])*M[lib],N_n[lib])
+            # condition 1 when we have to choose the best 
+            if sumBooks<N_n[lib]:
+                chooseNum=0
+                for i in range(N_n[lib]):
+                    Bookvalue=LibBookValue[lib][i]
+                    if chooseNum>=sumBooks:
+                        break
+                    if Bookvalue!=0:
+                        chooseNum+=1
+                        SumValue+=Bookvalue
+                        choosedList.append(i)
+                
+                if returnchooseList:
+                    return SumValue,choosedList
+                else:
+                    return SumValue
+            else:
+                SumValue=np.sum(LibBookValue[lib])
+                if returnchooseList:
+                    return SumValue,[i for i in range(N_n[lib])]
+                else:
+                    return SumValue
+        else: 
+            if returnchooseList:
+                return 0,[]
+            else:
+                return 0
 
-    curDay+=T[choose]
-    finalScore+=libGain
-    orderLib.append(choose)
-    print(len(orderLib))
-    orderBYcmp.remove(choose)
-print("final score %d"%finalScore)
-print("Curday %d"%curDay)
-print(orderLib)
-# orderLib=[147, 204, 210, 694, 719, 595, 774, 901, 618, 369, 422, 312, 622, 672, 828, 454, 431]
-shippedBooks=orderedLib2N_n(orderLib,B_value,T,M,N_n,N,D)
-submission=generateSubmission(orderLib,shippedBooks)
-# show score of the submission.
-print(judgeFunction(submission,B_value))
 
-#write submission to file.
-with open("f"+"_answer_esti.txt","w") as f:
-    f.write(submission)
+    limit=1
+    input=parseINPUT("f_libraries_of_the_world.txt")
+    B,L,D,B_value,N,T,M,N_n=input.values()
+
+    orderBYcmp=[i for i in range(L)]
+    orderLib=[]
+
+    for i in range(L):
+        N[i].sort(key=sortBybookValuein,reverse=True)
+
+    # libvalue is used to store the maxim value of library.
+    # libBookValue is used to store the current value of book
+    # book dic is book in which library dictionary.
+    # used to reduce time complexity
+    # variable initialization
+    LibBookValue={}
+    book_dic={}
+    for lib in orderBYcmp:
+        valueList=[]
+        for index in range(N_n[lib]):
+            book=N[lib][index]
+            valueList.append(B_value[book])
+            if book in book_dic:
+                book_dic[book].append((lib,index))
+            else:
+                book_dic[book]=[(lib,index)]
+        LibBookValue[lib]=valueList 
+
+    shippedBooks=[]
+    finalScore=0
+    curDay=0
+    while curDay<=D and len(orderBYcmp)>=1:
+        bubbleSortReversed(orderBYcmp,cmp,limit)
+        candidateLib=orderBYcmp[:limit]
+
+        chooseLib=-1
+        valueGain=0
+        libGain=0
+        curLibchoosed=[]
+        for lib in candidateLib:
+            if curDay+T[lib]<D:
+                gain,choosedList=calGain(lib,True)
+
+                LibBookValueCur=copy.deepcopy(LibBookValue)
+                for bookindex in choosedList:
+                    book=N[lib][bookindex]
+                    for curlib,index in book_dic[book]:
+                        LibBookValueCur[curlib][index]=0
+
+                orderBYcmpCur=copy.deepcopy(orderBYcmp)
+                orderBYcmpCur.remove(lib)
+                # estimateGain=solveByLocalOpt(orderBYcmpCur,LibBookValueCur,T,M,N_n,N,D-curDay-T[lib],book_dic)
+                estimateGain=0
+                gain+=estimateGain
+                if gain>valueGain:
+                    valueGain=gain
+                    chooseLib=lib
+                    libGain=gain-estimateGain
+                    curLibchoosed=choosedList
+        if chooseLib==-1:
+            break
+        book_List=[]
+        for bookindex in curLibchoosed:
+            book=N[chooseLib][bookindex]
+            book_List.append(book)
+            for lib,index in book_dic[book]:
+                LibBookValue[lib][index]=0
+        
+        shippedBooks.append(book_List)
+        curDay+=T[chooseLib]
+        finalScore+=libGain
+        orderLib.append(chooseLib)
+        orderBYcmp.remove(chooseLib)
+    print("final score %d"%finalScore)
+    print("Curday %d"%curDay)
+    print(orderLib)
+    # orderLib=[147, 204, 210, 694, 719, 595, 774, 901, 618, 369, 422, 312, 622, 672, 828, 454, 431]
+    # shippedBooks=orderedLib2N_n(orderLib,B_value,T,M,N_n,N,D)
+    submission=generateSubmission(orderLib,shippedBooks)
+    # show score of the submission.
+    print(judgeFunction(submission,B_value))
+
+    # #write submission to file.
+    # with open("f"+"_answer_esti.txt","w") as f:
+    #     f.write(submission)

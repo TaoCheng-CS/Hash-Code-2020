@@ -14,6 +14,9 @@ Here are my ideas for these problem.
     $$
     Sum(N_i)=220800>78600=B
     $$
-    We only need to continually select the library whose gain is maximuim.
+    We only need to continually select the library whose gain is maximuim.n The sum value of books is 5109000.
 
 5. The obvious feature of problem e is that it can only ship at most 1/10 books.
+
+
+the global best answers of problem a and problem b are founded. As for problem d, the sum value of books is 5109000 which our result 5028010 is quite close to.

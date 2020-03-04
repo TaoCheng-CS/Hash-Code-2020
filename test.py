@@ -1,4 +1,5 @@
 from solve import*
+from estimation_method import bubbleSortReversed
 
 def test_genSubmission():
     orderedLib=[1,0]
@@ -14,3 +15,10 @@ def test_score():
     output_string=f.read()
     score=judgeFunction(output_string,B_value)
     print(score)
+
+def test_bubblesort():
+    def cmp(a,b):
+        return a-b
+    a=[i for i in range(10000)]
+    bubbleSortReversed(a,cmp,3)
+    print(a[:3])
