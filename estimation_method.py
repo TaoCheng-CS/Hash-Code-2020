@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
 
     limit=1
-    input=parseINPUT("f_libraries_of_the_world.txt")
+    input=parseINPUT("c_incunabula.txt")
     B,L,D,B_value,N,T,M,N_n=input.values()
 
     orderBYcmp=[i for i in range(L)]

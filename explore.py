@@ -1,19 +1,50 @@
 from solve import parseINPUT
 import numpy as np
 def b_problem():
-    B_value=parseINPUT("b_read_on.txt")["valueOFbook"]
+    input=parseINPUT("b_read_on.txt")
+    B_value=input["valueOFbook"]
+    M=input["numOFbooksSHIPPED"]
     for value in B_value:
         assert value==100
+    for value in M:
+        assert value==1
     
 def c_problem():
     input=parseINPUT("c_incunabula.txt")
-    N_n,M=input["booksINlib"],input["numOFbooksSHIPPED"]
+    N_n,M=input["numOFbooksINlib"],input["numOFbooksSHIPPED"]
     for i in range(len(N_n)):
         assert N_n[i]<M[i]
     
-    print(np.sum(N_n))
+    print("Sum of N_n is %d"%(np.sum(N_n)))
     B_value=input["valueOFbook"]
     print("Sum value is %d"%(np.sum(B_value)))
+
+    N=input["booksINlib"]
+    book_time_dic={}
+    for lib in N:
+        for book in lib:
+            if book in book_time_dic:
+                book_time_dic[book]+=1
+            else:
+                book_time_dic[book]=1
+    bucks={}
+    for book in book_time_dic:
+        value=book_time_dic[book]
+        if  value in bucks:
+            bucks[value]+=1
+        else:
+            bucks[value]=1
+    print("bucks of book exist: ")
+    print(bucks)
+
+    value_bucks={}
+    for value in B_value:
+        if  int(value/10) in value_bucks:
+            value_bucks[int(value/10)]+=1
+        else:
+            value_bucks[int(value/10)]=1
+    print("bucks of book value: ")
+    print(value_bucks)
 
 def d_problem():
     input=parseINPUT("d_tough_choices.txt")
@@ -32,6 +63,50 @@ def d_problem():
         assert m==1
     
     print(np.sum(N_n))
+    book_time_dic={}
+    for lib in N:
+        for book in lib:
+            if book in book_time_dic:
+                book_time_dic[book]+=1
+            else:
+                book_time_dic[book]=1
+    bucks={}
+    for book in book_time_dic:
+        value=book_time_dic[book]
+        if  value in bucks:
+            bucks[value]+=1
+        else:
+            bucks[value]=1
+    print("bucks of book exist: ")
+    print(bucks)
+
+    N_n_bucks={}
+    for value in N_n:
+        if  value in N_n_bucks:
+            N_n_bucks[value]+=1
+        else:
+            N_n_bucks[value]=1
+    print("bucks of N_n value: ")
+    print(N_n_bucks)
+
+    time_list=[]
+    for lib in N:
+        time=0
+        for book in lib:
+            if book_time_dic[book]==2:
+                time+=1
+        time_list.append(time)
+    
+    time_bucks={}
+    for value in time_list:
+        if  value in time_bucks:
+            time_bucks[value]+=1
+        else:
+            time_bucks[value]=1
+    print("bucks of book time appears value: ")
+    print(time_bucks)
+
+
 
 def e_problem():
     input=parseINPUT("e_so_many_books.txt")
@@ -66,4 +141,5 @@ def f_problem():
     print(np.sum(B_value[:12881]))
 
 
-c_problem()
+
+d_problem()

@@ -34,10 +34,10 @@ def parseINPUT(file_name):
         "numOFlibs":L,
         "numOFdays":D,
         "valueOFbook":B_value,
-        "numOFbooksINlib":N,
+        "booksINlib":N,
         "numOFsignupDays":T,
         "numOFbooksSHIPPED":M,
-        "booksINlib":N_n
+        "numOFbooksINlib":N_n
     }
 
 # function to compute  the score of the submission.
@@ -87,15 +87,12 @@ def optimizer4b(input):
 
     #iteration
     curDay=0
-    numLibs=0
-    while curDay<=D and numLibs<=B:
+    while curDay<=D:
         # get the best lib
         curLib=orderBYsignup[0]
         orderBYsignup=orderBYsignup[1:]
-        
         if curDay+T[curLib]<=D:
             curDay+=T[curLib]
-            numLibs+=1
             orderedLib.append(curLib)
             sumBooks=min((D-curDay)*M[curLib],N_n[curLib])
             shippedBooks+=[N[curLib][:sumBooks]]
@@ -125,7 +122,7 @@ def optimizer4c(input):
     #iteration
     curDay=0
     numLibs=0
-    while curDay<=D and numLibs<=B:
+    while curDay<=D and numLibs<=L:
         # get the best lib
         orderBYcmp.sort(key=cmp,reverse=True)
         # orderBYcmp.sort(key=cmp_to_key(cmp2),reverse=True)
@@ -229,8 +226,10 @@ def optimizer4dselect(input):
         value2=cmp(lib2)
 
         if value1==value2:
-            # todo
-            return 0
+            burden1=0
+            burden2=0
+            
+
         else:
             return value1-value2
 
@@ -260,11 +259,12 @@ def optimizer4dselect(input):
 
     while curDay<=D and numLibs<=B:
         # get the best lib
-        orderBYcmp.sort(key=cmp,reverse=True)
+        orderBYcmp.sort(key=cmp_to_key(cmp1),reverse=True)
         curLib=orderBYcmp[0]
         orderBYcmp=orderBYcmp[1:]
 
         if curDay+T[curLib]<D:
+            print(curDay)
             curDay+=T[curLib]
             numLibs+=1
             orderedLib.append(curLib)
@@ -431,12 +431,12 @@ if __name__ == "__main__":
     file_name=file_name_list[3]
 
     input=parseINPUT(file_name)
-    orderedLib,shippedBooks=optimizer4d(input)
+    orderedLib,shippedBooks=optimizer4dselect(input)
     submission=generateSubmission(orderedLib,shippedBooks)
     # print(orderedLib)
     # show score of the submission.
     print(judgeFunction(submission,input["valueOFbook"]))
     
-    # write submission to file.
-    with open(file_name[0]+"_answer.txt","w") as f:
-        f.write(submission)
+    # # write submission to file.
+    # with open(file_name[0]+"_answer.txt","w") as f:
+    #     f.write(submission)

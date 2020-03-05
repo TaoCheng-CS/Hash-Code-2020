@@ -20,3 +20,5 @@ Here are my ideas for these problem.
 
 
 the global best answers of problem a and problem b are founded. As for problem d, the sum value of books is 5109000 which our result 5028010 is quite close to.
+
+Handful efforts paid to the problem D made me realise the problem is a set cover problem. I am going to use gene algorithm to solve this problem. Also, solving these problems is quite challenging for me. I have going through greedy algorithm and parameter tunning. 
