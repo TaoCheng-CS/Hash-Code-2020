@@ -1,67 +1,95 @@
-from utils import *
+from utils import parseINPUT
+from utils import generateSubmission, judgeFunction
+from utils import bubbleSortReversedByvalue
 import copy
-from math import sqrt
-def solve(B_value:list,candidate_lib:list,curDay:int):
-    def cmp(lib1,lib2):
-        value1=0
-        if curDay+T[lib1]<D:
-            value1=sum_value[lib1]
-        value2=0
-        if curDay+T[lib2]<D:
-            value2=sum_value[lib2]
-        return value1/T[lib1]-value2/T[lib2]
+import numpy as np
 
-    orderedLib=[]
-    shippedBooks=[]
-    B_valueCur=copy.deepcopy(B_value)
+consider_range = 2
 
-    sum_value={}
-    for lib in candidate_lib:
-        value=0
-        for book in N[lib]:
-            value+=B_valueCur[book]
-        sum_value[lib]=value
+np.random.seed(0)
+max_prob = 0.65
 
-    #iteration begans
-    while curDay<=D:
-        # get the best lib
-        bubbleSortReversed(candidate_lib,cmp,1)
-        curLib=candidate_lib[0]
-        candidate_lib=candidate_lib[1:]
-        if curDay+T[curLib]<D:
-            for book in N[curLib]:
-                if B_valueCur[book]!=0:
-                    for lib in book_dic[book]:
-                        sum_value[lib]-=B_valueCur[book]
-                    B_valueCur[book]=0
 
-            curDay+=T[curLib]
-            orderedLib.append(curLib)
-            shippedBooks+=[N[curLib]]
-            # print(T[curLib])
+def solve(B_value: list, sum_value: dict, candidate_lib: list, curDay: int):
+    def average_value(lib):
+        if curDay + T[lib] < D:
+            return sum_valueCur[lib] / T[lib]
         else:
-            if curDay+T[curLib]==D:
-                print("Fine tunning needed for the last choice")
-            break
-    print(curDay)
-    return orderedLib,shippedBooks
+            return 0
 
-def grid_search(n,m):
-    pass
+    def reduce_sum_value(sumvalue_list, choosed_lib, B_valueList):
+        for book in N[choosed_lib]:
+            if B_valueList[book] != 0:
+                for lib in book_dic[book]:
+                    sumvalue_list[lib] -= B_valueList[book]
+                B_valueList[book] = 0
+
+    orderedLib = []
+    shippedBooks = []
+
+    Sum_gain = 0
+    B_valueCur = copy.deepcopy(B_value)
+    sum_valueCur = copy.deepcopy(sum_value)
+
+    # iteration begans
+    while curDay < D:
+        # get the best lib
+        value = list(map(average_value, candidate_lib))
+        # bubbleSortReversed(candidate_lib, cmp, consider_range)
+        curLib = -1
+        gain = 0
+        bubbleSortReversedByvalue(candidate_lib, value, consider_range)
+        prob = np.random.rand(1)
+
+        if prob < max_prob:
+            choose_index = 1
+        else:
+            choose_index = 0
+
+        curLib = candidate_lib[choose_index]
+        if curDay + T[curLib] < D:
+            gain = sum_valueCur[curLib]
+        else:
+            gain = 0
+
+        Sum_gain += gain
+        candidate_lib.remove(curLib)
+        reduce_sum_value(sum_valueCur, curLib, B_valueCur)
+        curDay += T[curLib]
+        if curDay < D:
+            shippedBooks += [N[curLib]]
+            orderedLib.append(curLib)
+    return orderedLib, shippedBooks, Sum_gain
+
 
 if __name__ == "__main__":
-    input=parseINPUT("c_incunabula.txt")
-    B,L,D,B_value,N,T,M,N_n=input.values()
-    book_dic={}
+
+    input = parseINPUT("c_incunabula.txt")
+    B, L, D, B_value, N, T, M, N_n = input.values()
+    book_dic = {}
     for i in range(L):
         for book in N[i]:
             if book in book_dic:
                 book_dic[book].append(i)
             else:
-                book_dic[book]=[i]
-    orderedLib,shippedBooks=solve(B_value,[i for i in range(L)],0)
-    submission=generateSubmission(orderedLib,shippedBooks)
-    print(judgeFunction(submission,B_value))
+                book_dic[book] = [i]
+
+    sumValue = {}
+    B_valueCur = copy.deepcopy(B_value)
+    for lib in range(L):
+        value = 0
+        for book in N[lib]:
+            B_valueCur[book] = B_value[book]
+            value += B_valueCur[book]
+        sumValue[lib] = value
+
+    orderedLib, shippedBooks, Sum_gain = solve(B_valueCur, sumValue,
+                                               [i for i in range(L)], 0)
+    submission = generateSubmission(orderedLib, shippedBooks)
+    print(Sum_gain)
+    print(judgeFunction(submission, B_value))
     # # write submission to file.
-    # with open("c_answer.txt","w") as f:
+    # with open(
+    #         "c_answer_est_method_considerrange_%d_threshday_%d.txt" %
+    #     (consider_range, thresh_day), "w") as f:
     #     f.write(submission)

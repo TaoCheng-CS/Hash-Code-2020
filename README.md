@@ -1,7 +1,25 @@
 # Google Hash Code 2020
-
-
 Hash Code is a team programming competition, organized by Google, for students and professionals around the world. The official link is [this](https://codingcompetitions.withgoogle.com/hashcode). I participated in the online qualification round of hash code 2020 and I think the question is quite interesting. I put my solution here. If you have better ideas, please let me know. 
+
+My final result is here!
+| Problem  | Score |
+| ------------- | ------------- |
+| A  | 21       |
+| B  | 5822900  |
+| C  | 5690468  |
+| D  | 5030545  |
+| E  | 5079012  |
+| F  | 5348248  |
+![result](result.png)(I got better result on the problem D after the extend round ending.)
+My final global and local rank is here!
+![gloabl rank](rank_global.png)
+![rand_local](rank_local.png)
+
+## Method
+This problem obviously is a set covering problem which find the best answer is NP complete.
+I use greedy method and probabilistic method to fine tuning. 
+
+## specific method for each problem
 
 Here are my ideas for these problem.
 1.  First problem is quite easy and we can easily found a solution that all valuable books can be shipped. And the final score is 21=1+2+3+4+5+6.
@@ -19,6 +37,8 @@ Here are my ideas for these problem.
 5. The obvious feature of problem e is that it can only ship at most 1/10 books.
 
 
-the global best answers of problem a and problem b are founded. As for problem d, the sum value of books is 5109000 which our result 5028010 is quite close to.
+the global best answers of problem a and problem b are founded. As for problem d, the sum value of books is 5109000 which our result 5030545 is quite close to.
 
-Handful efforts paid to the problem D made me realise the problem is a set cover problem. I am going to use gene algorithm to solve this problem. Also, solving these problems is quite challenging for me. I have going through greedy algorithm and parameter tunning. 
+
+## Story behind this
+I and a classmate in collage took participate in this competition. We got up in midnight and tried our best to solve problems. When I was coding, I realized that it may can be solved by greedy method. But my code capacity was quite poor and didn't make it. We finally got score of 18768231. I learned the importance of module thinking and the importance of coding ability. 
