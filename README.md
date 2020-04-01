@@ -41,4 +41,4 @@ the global best answers of problem a and problem b are founded. As for problem d
 
 
 ## Story behind this
-I and a classmate in collage took participate in this competition. We got up in midnight and tried our best to solve problems. When I was coding, I realized that it may can be solved by greedy method. But my code capacity was quite poor and didn't make it. We finally got score of 18768231. I learned the importance of module thinking and the importance of coding ability. 
+I and a classmate in collage took participate in this competition. We got up in midnight and tried our best to solve problems. When I was coding, I realized that it may can be solved by greedy method. But my code capacity was quite poor and didn't make it. We finally got score of 18768231. I learned the importance of module thinking and coding ability. 
